@@ -1,6 +1,6 @@
 import { SequenceValue } from './types';
 import findwords from '@wormss/findwords';
-import { storeLastPoint, getLastPoint } from './utils';
+import { storeLastPoint, getLastPoint, storeWords, closeWords } from './utils';
 import { blocks } from './blocks';
 
 function* sequence(init: SequenceValue): IterableIterator<SequenceValue> {
@@ -31,15 +31,18 @@ function* sequence(init: SequenceValue): IterableIterator<SequenceValue> {
     return false;
   }
 }
-async function main() {
+function main() {
   try {
     for (const seqenceValue of sequence(getLastPoint())) {
-      const words = findwords(seqenceValue.map(index => blocks[index]).join(''));
-      if (words.length) console.log(words);
+      const regex = seqenceValue.map((index) => blocks[index]).join('');
+      const words = findwords(regex);
+      storeWords(words);
       storeLastPoint(seqenceValue);
     }
   } catch (err) {
     console.error(String(err));
+  } finally {
+    closeWords();
   }
 }
 main();

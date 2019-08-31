@@ -1,3 +1,5 @@
+import { Blocks } from './types';
+
 const a = 'a',
   b = 'b',
   c = 'c',
@@ -25,24 +27,7 @@ const a = 'a',
   y = 'y',
   z = 'z';
 
-export const blocks: [
-  string,
-  string,
-  string,
-  string,
-  string,
-  string,
-  string,
-  string,
-  string,
-  string,
-  string,
-  string,
-  string,
-  string,
-  string,
-  string
-] = [
+export const blocks: Blocks = [
   // Red
   Block('', a, b, c, d, 1),
   Block('', e, f, g, h, 1),
@@ -62,7 +47,7 @@ export const blocks: [
   Block('', a, b, c, d, 1),
   Block('', a, b, c, d, 1),
   Block('', a, b, c, d, 1),
-  Block('', a, b, c, d, 1)
+  Block('', a, b, c, d, 1),
 ];
 
 function Block(
@@ -71,8 +56,8 @@ function Block(
   face2: string,
   face3: string,
   face4: string,
-  face5: string | number
-) {
+  face5: string | number,
+): string {
   const faces: string[] = [face1, face2, face3, face4];
   if (typeof face5 === 'string') {
     faces.push(face5);
