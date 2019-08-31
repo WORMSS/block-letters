@@ -1,0 +1,20 @@
+{
+  "name": "block-letters",
+  "version": "1.0.0",
+  "description": "",
+  "main": "lib/index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "dependencies": {
+    "@wormss/findwords": "^1.0.2"
+  },
+  "devDependencies": {
+    "@types/node": "^12.7.3"
+  },
+  "scripts": {
+    "run": "node ."
+  },
+  "author": "",
+  "license": "ISC"
+}
