@@ -3,6 +3,7 @@ import findwords from '@wormss/findwords';
 import { storeLastPoint, getLastPoint, storeWords, closeWords } from './utils';
 import { blocks } from './blocks';
 
+let close: boolean = false;
 function* sequence(init: SequenceValue): IterableIterator<SequenceValue> {
   const start: SequenceValue = Object.assign([], init);
   const value: SequenceValue = new Array(16).fill(0) as SequenceValue;
@@ -38,6 +39,10 @@ function main() {
       const words = findwords(regex);
       storeWords(words);
       storeLastPoint(seqenceValue);
+      if (close) {
+        console.log('stopped work due to close');
+        break;
+      }
     }
   } catch (err) {
     console.error(String(err));
@@ -45,4 +50,8 @@ function main() {
     closeWords();
   }
 }
+process.on('SIGINT', (_signal) => {
+  console.log('preparing to close');
+  close = true;
+});
 main();

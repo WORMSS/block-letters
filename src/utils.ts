@@ -45,7 +45,9 @@ export function storeWords(values: string[]): void {
     fdWords = openSync(WORDS, 'as');
   }
   for (const value of values) {
-    appendFileSync(fdWords, value, 'utf-8');
+    if (value.length > 10) {
+      appendFileSync(fdWords, value + '\n', 'utf-8');
+    }
   }
 }
 export function closeWords() {

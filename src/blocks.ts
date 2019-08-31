@@ -28,26 +28,26 @@ const a = 'a',
   z = 'z';
 
 export const blocks: Blocks = [
-  // Red
-  Block('', a, b, c, d, 1),
-  Block('', e, f, g, h, 1),
-  Block('', a, b, c, d, 1),
-  Block('', a, b, c, d, 1),
-  // Green
-  Block('', a, b, c, d, 1),
-  Block('', a, b, c, d, 1),
-  Block('', a, b, c, d, 1),
-  Block('', a, b, c, d, 1),
-  // Blue
-  Block('', a, b, c, d, 1),
-  Block('', a, b, c, d, 1),
-  Block('', a, b, c, d, 1),
-  Block('', a, b, c, d, 1),
-  // Green
-  Block('', a, b, c, d, 1),
-  Block('', a, b, c, d, 1),
-  Block('', a, b, c, d, 1),
-  Block('', a, b, c, d, 1),
+  //red
+  Block('goose', r, e, n, k, y),
+  Block('bear', t, a, p, e, 4),
+  Block('frog', q, d, l, i, s),
+  Block('pear', u, b, l, g, 8),
+  //blue
+  Block('butterfly', r, b, o, e, 7),
+  Block('fat catapilla', p, d, o, e, t),
+  Block('sun', r, e, m, i, x),
+  Block('apple catapilla', w, a, o, g, 3),
+  //green
+  Block('blueberry', u, c, o, e, 6),
+  Block('bird', o, d, m, j, p),
+  Block('strawberry', z, a, s, h, 5),
+  Block('cat', t, a, l, e, 1),
+  //yellow
+  Block('sea horse', o, e, n, i, t),
+  Block('orange', s, c, n, i, 10),
+  Block('lady bird', v, a, n, f, 2),
+  Block('catapilla', u, a, r, i, 9),
 ];
 
 function Block(
