@@ -17,7 +17,7 @@ function* sequence(init: SequenceValue): IterableIterator<SequenceValue> {
       if (includesBefore(depth, i)) continue;
       value[depth] = i;
       if (depth >= 15) {
-        yield value;
+        yield value.slice(); // Do not leak internal reference.
       } else {
         yield* recurse(depth + 1);
       }
