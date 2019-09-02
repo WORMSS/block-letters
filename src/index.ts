@@ -1,11 +1,11 @@
 import { SequenceValue } from './types';
 import findwords from '@wormss/findwords';
-import { storeLastPoint, getLastPoint, storeWords, closeWords } from './utils';
+import { storeLastPoint, getLastPoint, storeWords, closeWords, getLongestWords } from './utils';
 import { blocks } from './blocks';
 
 let close: boolean = false;
 function* sequence(init: SequenceValue): IterableIterator<SequenceValue> {
-  const start: SequenceValue = Object.assign([], init);
+  const start: SequenceValue = init.slice() as SequenceValue;
   const value: SequenceValue = new Array(16).fill(0) as SequenceValue;
 
   yield* recurse(0);
@@ -17,7 +17,7 @@ function* sequence(init: SequenceValue): IterableIterator<SequenceValue> {
       if (includesBefore(depth, i)) continue;
       value[depth] = i;
       if (depth >= 15) {
-        yield value.slice(); // Do not leak internal reference.
+        yield value.slice() as SequenceValue; // Do not leak internal reference.
       } else {
         yield* recurse(depth + 1);
       }
@@ -34,9 +34,10 @@ function* sequence(init: SequenceValue): IterableIterator<SequenceValue> {
 }
 function main() {
   try {
+    const longestWords = getLongestWords();
     for (const seqenceValue of sequence(getLastPoint())) {
-      const regex = seqenceValue.map((index) => blocks[index]).join('');
-      const words = findwords(regex);
+      const regex = seqenceValue.map(index => blocks[index]).join('');
+      const words = findwords(regex, longestWords);
       storeWords(words);
       storeLastPoint(seqenceValue);
       if (close) {

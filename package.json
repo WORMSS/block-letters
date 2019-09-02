@@ -7,7 +7,7 @@
     "lib": "lib"
   },
   "dependencies": {
-    "@wormss/findwords": "^1.0.2"
+    "@wormss/findwords": "1.1.0"
   },
   "devDependencies": {
     "@types/node": "^12.7.3"

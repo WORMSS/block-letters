@@ -41,12 +41,12 @@ export function storeWords(values: string[]): void {
   if (values.length === 0) {
     return;
   }
-  if (fdWords === null) {
-    fdWords = openSync(WORDS, 'as');
-  }
   for (const value of values) {
-    if (value.length > 10) {
-      appendFileSync(fdWords, value + '\n', 'utf-8');
+    if (value.length > 13) {
+      if (fdWords === null) {
+        fdWords = openSync(WORDS, 'as');
+      }
+      appendFileSync(fdWords, value, 'utf-8');
     }
   }
 }
@@ -55,4 +55,8 @@ export function closeWords() {
     return;
   }
   closeSync(fdWords);
+}
+
+export function getLongestWords() {
+  return readFileSync('./longest_words.txt', 'utf8');
 }
