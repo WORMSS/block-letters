@@ -21,7 +21,7 @@ export function getLastPoint(): SequenceValue {
     if (!isArrayOfNumbers(lastPoint)) {
       throw new Error(`${LAST_POINT} is invalid, values are not numbers`);
     }
-    if (!lastPoint.every((v) => v >= 0 && v < 16)) {
+    if (!lastPoint.every(v => v >= 0 && v < 16)) {
       throw new Error(`${LAST_POINT} is invalid, number out of range`);
     }
     if (!lastPoint.every((v, index, array) => array.indexOf(v) === index)) {
@@ -31,7 +31,7 @@ export function getLastPoint(): SequenceValue {
   }
   return new Array(16).fill(undefined).map((_, i) => i) as SequenceValue;
   function isArrayOfNumbers(array: any[]): array is number[] {
-    return array.every((v) => typeof v === 'number');
+    return array.every(v => typeof v === 'number');
   }
 }
 export function storeLastPoint(value: SequenceValue): void {
@@ -41,11 +41,13 @@ export function storeWords(values: string[]): void {
   if (values.length === 0) {
     return;
   }
-  if (fdWords === null) {
-    fdWords = openSync(WORDS, 'as');
-  }
   for (const value of values) {
-    appendFileSync(fdWords, value, 'utf-8');
+    if (value.length > 13) {
+      if (fdWords === null) {
+        fdWords = openSync(WORDS, 'as');
+      }
+      appendFileSync(fdWords, value, 'utf-8');
+    }
   }
 }
 export function closeWords() {
@@ -53,4 +55,8 @@ export function closeWords() {
     return;
   }
   closeSync(fdWords);
+}
+
+export function getLongestWords() {
+  return readFileSync('./longest_words.txt', 'utf8');
 }
