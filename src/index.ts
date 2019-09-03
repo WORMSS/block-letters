@@ -1,7 +1,13 @@
-import { SequenceValue } from './types';
 import findwords from '@wormss/findwords';
-import { storeLastPoint, getLastPoint, storeWords, closeWords, getLongestWords } from './utils';
 import { blocks } from './blocks';
+import { SequenceValue } from './types';
+import {
+  closeWords,
+  getLastPoint,
+  getLongestWords,
+  storeLastPoint,
+  storeWords,
+} from './utils';
 
 let close: boolean = false;
 function* sequence(init: SequenceValue): IterableIterator<SequenceValue> {
@@ -14,7 +20,9 @@ function* sequence(init: SequenceValue): IterableIterator<SequenceValue> {
     let i = start[depth];
     start[depth] = 0;
     for (; i < 16; i++) {
-      if (includesBefore(depth, i)) continue;
+      if (includesBefore(depth, i)) {
+        continue;
+      }
       value[depth] = i;
       if (depth >= 15) {
         yield value.slice() as SequenceValue; // Do not leak internal reference.
@@ -36,12 +44,12 @@ function main() {
   try {
     const longestWords = getLongestWords();
     for (const seqenceValue of sequence(getLastPoint())) {
-      const regex = seqenceValue.map(index => blocks[index]).join('');
+      const regex = seqenceValue.map((index) => blocks[index]).join('');
       const words = findwords(regex, longestWords);
       storeWords(words);
       storeLastPoint(seqenceValue);
       if (close) {
-        console.log('stopped work due to close');
+        console.info('stopped work due to close');
         break;
       }
     }
@@ -51,8 +59,12 @@ function main() {
     closeWords();
   }
 }
-process.on('SIGINT', (_signal) => {
-  console.log('preparing to close');
+function onCloseSignal() {
+  console.info('preparing to close');
   close = true;
-});
+}
+process.on('SIGINT', onCloseSignal);
+process.on('SIGTERM', onCloseSignal);
+process.on('SIGUSR1', onCloseSignal);
+process.on('SIGUSR2', onCloseSignal);
 main();

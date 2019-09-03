@@ -1,17 +1,25 @@
+import {
+  appendFileSync,
+  closeSync,
+  existsSync,
+  openSync,
+  readFileSync,
+  writeFileSync,
+} from 'fs';
 import { SequenceValue } from './types';
-import { readFileSync, existsSync, writeFileSync, openSync, appendFileSync, closeSync } from 'fs';
 
 const LAST_POINT = './last-point.json';
 const WORDS = './words.txt';
 let fdWords: number | null = null;
+const knownWords = new Set(readFileSync(WORDS, 'utf-8').split(/\r?\n/));
 
 export function getLastPoint(): SequenceValue {
   if (existsSync(LAST_POINT)) {
-    const tmp_str = readFileSync(LAST_POINT, 'utf-8');
-    if (tmp_str === '') {
+    const fileStr = readFileSync(LAST_POINT, 'utf-8');
+    if (fileStr === '') {
       throw new Error(`${LAST_POINT} is empty`);
     }
-    const lastPoint = JSON.parse(tmp_str);
+    const lastPoint = JSON.parse(fileStr);
     if (!Array.isArray(lastPoint)) {
       throw new Error(`${LAST_POINT} is invalid, not array`);
     }
@@ -42,11 +50,12 @@ export function storeWords(values: string[]): void {
     return;
   }
   for (const value of values) {
-    if (value.length > 13) {
+    if (value.length > 13 && !knownWords.has(value)) {
       if (fdWords === null) {
         fdWords = openSync(WORDS, 'as');
       }
       appendFileSync(fdWords, value + '\n', 'utf-8');
+      knownWords.add(value);
     }
   }
 }
@@ -55,6 +64,7 @@ export function closeWords() {
     return;
   }
   closeSync(fdWords);
+  fdWords = null;
 }
 
 export function getLongestWords() {
