@@ -46,7 +46,7 @@ export function storeWords(values: string[]): void {
       if (fdWords === null) {
         fdWords = openSync(WORDS, 'as');
       }
-      appendFileSync(fdWords, value, 'utf-8');
+      appendFileSync(fdWords, value + '\n', 'utf-8');
     }
   }
 }
