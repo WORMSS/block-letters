@@ -40,7 +40,7 @@ function* sequence(init: SequenceValue): IterableIterator<SequenceValue> {
     return false;
   }
 }
-function main() {
+async function main() {
   try {
     const longestWords = getLongestWords();
     for (const seqenceValue of sequence(getLastPoint())) {
@@ -49,8 +49,10 @@ function main() {
       storeWords(words);
       storeLastPoint(seqenceValue);
       if (close) {
-        console.info('stopped work due to close');
+        console.log('stopped work due to close');
         break;
+      } else {
+        await delay();
       }
     }
   } catch (err) {
@@ -59,8 +61,11 @@ function main() {
     closeWords();
   }
 }
-function onCloseSignal() {
-  console.info('preparing to close');
+function delay() {
+  return new Promise((r) => setImmediate(r));
+}
+function onCloseSignal(signal: NodeJS.Signals) {
+  console.log('preparing to close', signal);
   close = true;
 }
 process.on('SIGINT', onCloseSignal);

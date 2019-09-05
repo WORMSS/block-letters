@@ -49,6 +49,7 @@ export function storeWords(values: string[]): void {
   if (values.length === 0) {
     return;
   }
+  reportMinors(values);
   for (const value of values) {
     if (value.length > 13 && !knownWords.has(value)) {
       if (fdWords === null) {
@@ -69,4 +70,10 @@ export function closeWords() {
 
 export function getLongestWords() {
   return readFileSync('./longest_words.txt', 'utf8');
+}
+function reportMinors(values: string[]) {
+  const longest = values.reduceRight((prev, curr) =>
+    curr.length > prev.length ? curr : prev,
+  );
+  console.log(longest, 'and', values.length, 'others');
 }
