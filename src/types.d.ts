@@ -14,7 +14,6 @@ export type SequenceValue = [
   number,
   number,
   number,
-  number
 ];
 export type Blocks = [
   string,
@@ -32,5 +31,5 @@ export type Blocks = [
   string,
   string,
   string,
-  string
+  string,
 ];

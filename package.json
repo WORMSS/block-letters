@@ -13,7 +13,7 @@
     "@types/node": "^12.7.3"
   },
   "scripts": {
-    "run": "node .",
+    "run": "start node . 0 ; start node . 1 ; start node . 2 ; start node . 3 ; start  node . 4 ; start  node . 5",
     "build": "tsc",
     "build-watch": "tsc -w"
   },
