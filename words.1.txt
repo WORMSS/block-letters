@@ -31,3 +31,8 @@ authentication
 authenticators
 questionnaires
 prefabrication
+perambulations
+protectionists
+agglomerations
+transcriptions
+transcendental
