@@ -1,5 +1,6 @@
 import { appendFileSync, existsSync, readFileSync, writeFileSync } from 'fs';
 import { SequenceValue } from './types';
+import { sendMailWord } from './email';
 
 const LAST_POINT = (prefixed: number) => `./last-point.${prefixed}.json`;
 const WORDS = (prefixed: number) => `./words.${prefixed}.txt`;
@@ -59,6 +60,9 @@ export function storeWords(prefixed: number, arrayOfValues: string[][]): void {
       }
       console.log(value);
       appendFileSync(WORDS(prefixed), value + '\n', 'utf-8');
+      if (value.length > 14) {
+        sendMailWord(value);
+      }
       knownWords.add(value);
     }
   }
