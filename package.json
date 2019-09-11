@@ -13,9 +13,11 @@
     "@types/node": "^12.7.3"
   },
   "scripts": {
-    "run": "start node . 0 ; start node . 1 ; start node . 2 ; start node . 3 ; start  node . 4 ; start  node . 5",
+    "run-home": "start node . 0 & start node . 1 & start node . 2 & start node . 3 & start node . 4 & start node . 5",
+    "run-work": "start node . 13 & start node . 14 & start node . 15",
     "build": "tsc",
-    "build-watch": "tsc -w"
+    "build-watch": "tsc -w",
+    "summary": "node ./lib/summary"
   },
   "author": "",
   "license": "ISC"
