@@ -40,3 +40,6 @@ administration
 administrators
 repartitioning
 rearrangements
+rearrangements
+reinterpreting
+reintroduction
