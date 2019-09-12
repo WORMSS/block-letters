@@ -68,7 +68,7 @@ export function storeWords(prefixed: number, arrayOfValues: string[][]): void {
       }
       // tslint:disable-next-line: no-console
       console.log(value);
-      appendFileSync(wordsFilePath, value + '\n', 'utf-8');
+      appendFileSync(wordsFilePath, value + EOL, 'utf-8');
       if (value.length > 14) {
         sendMailWord(value);
       }
