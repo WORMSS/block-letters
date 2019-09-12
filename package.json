@@ -7,12 +7,12 @@
     "lib": "lib"
   },
   "dependencies": {
-    "@types/nodemailer": "^6.2.1",
     "@wormss/findwords": "^1.1.1",
     "nodemailer": "^6.3.0"
   },
   "devDependencies": {
-    "@types/node": "^12.7.3"
+    "@types/node": "^12.7.5",
+    "@types/nodemailer": "^6.2.1"
   },
   "scripts": {
     "run-home": "start node . 0 & start node . 1 & start node . 2 & start node . 3 & start node . 4 & start node . 5",
