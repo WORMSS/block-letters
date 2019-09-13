@@ -4,7 +4,7 @@
   "jsRules": {},
   "rules": {
     "quotemark": [true, "single", "avoid-escape"],
-    "no-console": [true, "log"]
+    "no-console": false
   },
   "rulesDirectory": []
 }
