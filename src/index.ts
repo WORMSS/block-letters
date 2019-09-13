@@ -1,9 +1,10 @@
 import findwords from '@wormss/findwords';
 import { blocks } from './blocks';
-import { SequenceValue } from './types';
 import {
   getLastPoint,
   getLongestWords,
+  sequence,
+  setup,
   storeLastPoint,
   storeWords,
 } from './utils';
@@ -20,47 +21,16 @@ if (prefixed < 0) {
 }
 
 console.log('prefixed', prefixed);
+setup(prefixed);
 
 let close: boolean = false;
-function* sequence(init: SequenceValue): IterableIterator<SequenceValue> {
-  const start: SequenceValue = init.slice() as SequenceValue;
-  const value: SequenceValue = new Array(15).fill(0) as SequenceValue;
 
-  yield* recurse(0);
-
-  function* recurse(depth: number): IterableIterator<SequenceValue> {
-    let i = start[depth];
-    start[depth] = 0;
-    for (; i < 16; i++) {
-      if (includesBefore(depth, i)) {
-        continue;
-      }
-      value[depth] = i;
-      if (depth >= 14) {
-        yield value.slice() as SequenceValue; // Do not leak internal reference.
-      } else {
-        yield* recurse(depth + 1);
-      }
-    }
-  }
-  function includesBefore(depth: number, search: number): boolean {
-    if (search === prefixed) {
-      return true;
-    }
-    for (let i = depth - 1; i >= 0; i--) {
-      if (value[i] === search) {
-        return true;
-      }
-    }
-    return false;
-  }
-}
 async function main() {
   try {
     let count = 0;
     const longestWords = getLongestWords();
     const foundWords: RegExpMatchArray[] = [];
-    for (const seqenceValue of sequence(getLastPoint(prefixed))) {
+    for (const seqenceValue of sequence(getLastPoint())) {
       const regex = [prefixed, ...seqenceValue]
         .map((index) => blocks[index])
         .join('');
@@ -70,11 +40,10 @@ async function main() {
         console.log('stopped work due to close');
         break;
       } else if (count > 500) {
-        console.log([prefixed, ...seqenceValue]);
-        storeWords(prefixed, foundWords);
-        storeLastPoint(prefixed, seqenceValue);
-        foundWords.length = 0;
-        count = 0;
+        storeWords(foundWords);
+        storeLastPoint(seqenceValue);
+        foundWords.length = 0; // Empty the list.
+        count = 0; // Reset counter
         await delay();
       } else {
         ++count;

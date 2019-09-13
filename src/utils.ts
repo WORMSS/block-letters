@@ -1,38 +1,46 @@
 import { appendFileSync, existsSync, readFileSync, writeFileSync } from 'fs';
 import { EOL } from 'os';
-import { SequenceValue } from './types';
 import { sendMailWord } from './email';
+import { SequenceValue } from './types';
 
-const LAST_POINT = (prefixed: number) => `./last-point.${prefixed}.json`;
-const WORDS = (prefixed: number) => `./words.${prefixed}.txt`;
-let knownWords: Set<string> | null = null;
+const KNOWN_WORDS: Set<string> = new Set();
+let LAST_POINT: string = '';
+let WORDS: string = '';
+let PREFIXED: number = -1;
 
-export function getLastPoint(prefixed: number): SequenceValue {
-  const lastPointFilePath = LAST_POINT(prefixed);
-  if (existsSync(lastPointFilePath)) {
-    const fileStr = readFileSync(lastPointFilePath, 'utf-8');
+export function setup(prefixed: number) {
+  PREFIXED = prefixed;
+  LAST_POINT = `./last-point.${PREFIXED}.json`;
+  WORDS = `./words.${PREFIXED}.txt`;
+  if (existsSync(WORDS)) {
+    for (const word of readFileSync(WORDS, 'utf-8').split(/\r?\n/)) {
+      KNOWN_WORDS.add(word);
+    }
+  }
+  process.title = 'Block ' + PREFIXED.toString(10);
+}
+
+export function getLastPoint(): SequenceValue {
+  if (existsSync(LAST_POINT)) {
+    const fileStr = readFileSync(LAST_POINT, 'utf-8');
     if (fileStr === '') {
-      throw new Error(`${lastPointFilePath} is empty`);
+      throw new Error(`${LAST_POINT} is empty`);
     }
     const lastPoint = JSON.parse(fileStr);
     if (!Array.isArray(lastPoint)) {
-      throw new Error(`${lastPointFilePath} is invalid, not array`);
+      throw new Error(`${LAST_POINT} is invalid, not array`);
     }
     if (lastPoint.length !== 15) {
-      throw new Error(
-        `${lastPointFilePath} is invalid, array not 16 in length`,
-      );
+      throw new Error(`${LAST_POINT} is invalid, array not 16 in length`);
     }
     if (!isArrayOfNumbers(lastPoint)) {
-      throw new Error(
-        `${lastPointFilePath} is invalid, values are not numbers`,
-      );
+      throw new Error(`${LAST_POINT} is invalid, values are not numbers`);
     }
     if (!lastPoint.every((v) => v >= 0 && v < 16)) {
-      throw new Error(`${lastPointFilePath} is invalid, number out of range`);
+      throw new Error(`${LAST_POINT} is invalid, number out of range`);
     }
     if (!lastPoint.every((v, index, array) => array.indexOf(v) === index)) {
-      throw new Error(`${lastPointFilePath} is invalid, not unique`);
+      throw new Error(`${LAST_POINT} is invalid, not unique`);
     }
     return lastPoint as SequenceValue;
   }
@@ -41,12 +49,14 @@ export function getLastPoint(prefixed: number): SequenceValue {
     return array.every((v) => typeof v === 'number');
   }
 }
-export function storeLastPoint(prefixed: number, value: SequenceValue): void {
-  const lastPointFilePath = LAST_POINT(prefixed);
-  writeFileSync(lastPointFilePath, JSON.stringify(value), 'utf-8');
+
+export function storeLastPoint(value: SequenceValue): void {
+  process.title = `Block ${PREFIXED.toString(10)} [${value.join(', ')}]`;
+  console.log([PREFIXED, ...value]);
+  writeFileSync(LAST_POINT, JSON.stringify(value), 'utf-8');
 }
-export function storeWords(prefixed: number, arrayOfValues: string[][]): void {
-  const wordsFilePath = WORDS(prefixed);
+
+export function storeWords(arrayOfValues: string[][]): void {
   if (arrayOfValues.length === 0) {
     return;
   }
@@ -58,25 +68,53 @@ export function storeWords(prefixed: number, arrayOfValues: string[][]): void {
   }
 
   for (const value of values) {
-    if (value.length > 13 && !(knownWords && knownWords.has(value))) {
-      if (knownWords === null) {
-        knownWords = new Set(
-          existsSync(wordsFilePath)
-            ? readFileSync(wordsFilePath, 'utf-8').split(/\r?\n/)
-            : undefined,
-        );
-      }
-      // tslint:disable-next-line: no-console
+    if (value.length > 13 && !KNOWN_WORDS.has(value)) {
       console.log(value);
-      appendFileSync(wordsFilePath, value + EOL, 'utf-8');
+      appendFileSync(WORDS, value + EOL, 'utf-8');
+      KNOWN_WORDS.add(value);
       if (value.length > 14) {
         sendMailWord(value);
       }
-      knownWords.add(value);
     }
   }
 }
 
 export function getLongestWords() {
   return readFileSync('./longest_words.txt', 'utf8');
+}
+
+export function* sequence(
+  init: SequenceValue,
+): IterableIterator<SequenceValue> {
+  const start: SequenceValue = init.slice() as SequenceValue;
+  const value: SequenceValue = new Array(15).fill(0) as SequenceValue;
+
+  yield* recurse(0);
+
+  function* recurse(depth: number): IterableIterator<SequenceValue> {
+    let i = start[depth];
+    start[depth] = 0;
+    for (; i < 16; i++) {
+      if (includesBefore(depth, i)) {
+        continue;
+      }
+      value[depth] = i;
+      if (depth >= 14) {
+        yield value.slice() as SequenceValue; // Do not leak internal reference.
+      } else {
+        yield* recurse(depth + 1);
+      }
+    }
+  }
+  function includesBefore(depth: number, search: number): boolean {
+    if (search === PREFIXED) {
+      return true;
+    }
+    for (let i = depth - 1; i >= 0; i--) {
+      if (value[i] === search) {
+        return true;
+      }
+    }
+    return false;
+  }
 }
